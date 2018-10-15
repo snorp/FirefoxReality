@@ -597,7 +597,7 @@ public class KeyboardWidget extends UIWidget implements CustomKeyboardView.OnKey
 
     @Override
     public void updateCursorAnchorInfo(@NonNull GeckoSession session, @NonNull CursorAnchorInfo info) {
-
+        Log.d(LOGTAG, "======> updateCursorAnchorInfo");
     }
 
     @Override

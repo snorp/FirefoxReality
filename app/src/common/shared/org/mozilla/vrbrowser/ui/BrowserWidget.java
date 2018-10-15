@@ -253,7 +253,10 @@ public class BrowserWidget extends View implements Widget, SessionStore.SessionC
         if (session == null) {
             return null;
         }
-        return session.getTextInput().onCreateInputConnection(outAttrs);
+
+        InputConnection input = session.getTextInput().onCreateInputConnection(outAttrs);
+        input.requestCursorUpdates(InputConnection.CURSOR_UPDATE_IMMEDIATE);
+        return input;
     }
 
     @Override
