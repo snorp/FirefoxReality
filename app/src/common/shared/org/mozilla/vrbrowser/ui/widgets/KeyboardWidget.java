@@ -193,7 +193,7 @@ public class KeyboardWidget extends UIWidget implements CustomKeyboardView.OnKey
         Context context = getContext();
         aPlacement.width = WidgetPlacement.dpDimension(context, R.dimen.keyboard_width);
         aPlacement.height = WidgetPlacement.dpDimension(context, R.dimen.keyboard_height);
-        aPlacement.parentAnchorX = 0.5f;
+        aPlacement.parentAnchorX = 0.0f;
         aPlacement.parentAnchorY = 0.0f;
         aPlacement.anchorX = 0.5f;
         aPlacement.anchorY = 0.5f;
@@ -203,6 +203,11 @@ public class KeyboardWidget extends UIWidget implements CustomKeyboardView.OnKey
         aPlacement.rotation = (float)Math.toRadians(WidgetPlacement.floatDimension(context, R.dimen.keyboard_world_rotation));
         aPlacement.worldWidth = WidgetPlacement.floatDimension(context, R.dimen.keyboard_world_width);
         aPlacement.visible = false;
+    }
+
+    public void setPosition(float x, float y) {
+        mWidgetPlacement.translationX = mWidgetPlacement.width/2 + x;
+        mWidgetPlacement.translationY = y;
     }
 
     public void setBrowserWidget(BrowserWidget aWidget) {

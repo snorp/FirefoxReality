@@ -451,6 +451,16 @@ public class VRBrowserActivity extends PlatformActivity implements WidgetManager
 
                 } else {
                     MotionEventGenerator.dispatch(widget, aDevice, aPressed, aX, aY);
+                    MotionEventGenerator.Device device = MotionEventGenerator.getLastDevice(aDevice);
+                    if (device.mWasPressed && device.mCoords.length > 0) {
+                        Log.d(LOGTAG, "======> device: " + device.mCoords[0].x + ", " + device.mCoords[0].y);
+                        if (mKeyboard != null && widget != mKeyboard) {
+                            mKeyboard.getPlacement().parentHandle = aHandle;
+                            mKeyboard.setPosition(device.mCoords[0].x, widget.getPlacement().height - device.mCoords[0].y);
+                            if (mKeyboard.getPlacement().visible)
+                                updateWidget(mKeyboard);
+                        }
+                    }
                 }
             }
         });
