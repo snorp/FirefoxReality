@@ -65,8 +65,8 @@ public class MotionEventGenerator {
         event.recycle();
     }
 
-    static Device getLastDevice(int aDevice) {
-        return devices.get(aDevice);
+    public static MotionEvent.PointerCoords[] getPointerCoordinates(int aDevice) {
+        return devices.get(aDevice).mCoords;
     }
 
     public static void dispatch(Widget aWidget, int aDevice, boolean aPressed, float aX, float aY) {

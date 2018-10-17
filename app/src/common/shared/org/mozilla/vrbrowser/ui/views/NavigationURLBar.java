@@ -50,6 +50,7 @@ public class NavigationURLBar extends FrameLayout {
 
     public interface NavigationURLBarDelegate {
         void OnVoiceSearchClicked();
+        void OnUrlBarFocused(boolean focused);
     }
 
     public NavigationURLBar(Context context, AttributeSet attrs) {
@@ -78,6 +79,10 @@ public class NavigationURLBar extends FrameLayout {
                 showVoiceSearch(!b || (mURL.getText().length() == 0));
 
                 mURL.setSelection(mURL.getText().length(), 0);
+
+                if (mDelegate != null) {
+                    mDelegate.OnUrlBarFocused(b);
+                }
             }
         });
         final GestureDetector gd = new GestureDetector(getContext(), new UrlGestureListener());

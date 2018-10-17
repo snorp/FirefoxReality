@@ -20,6 +20,7 @@ import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -47,6 +48,7 @@ import org.mozilla.vrbrowser.ui.OffscreenDisplay;
 import org.mozilla.vrbrowser.ui.widgets.RootWidget;
 import org.mozilla.vrbrowser.ui.widgets.TopBarWidget;
 import org.mozilla.vrbrowser.ui.widgets.TrayWidget;
+import org.mozilla.vrbrowser.ui.widgets.UIWidget;
 import org.mozilla.vrbrowser.ui.widgets.Widget;
 import org.mozilla.vrbrowser.ui.widgets.WidgetManagerDelegate;
 import org.mozilla.vrbrowser.ui.widgets.WidgetPlacement;
@@ -114,6 +116,7 @@ public class VRBrowserActivity extends PlatformActivity implements WidgetManager
     private boolean mIsPresentingImmersive = false;
     private Thread mUiThread;
     private boolean isDimmed;
+    private MotionEvent.PointerCoords mLastTouchPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -451,15 +454,9 @@ public class VRBrowserActivity extends PlatformActivity implements WidgetManager
 
                 } else {
                     MotionEventGenerator.dispatch(widget, aDevice, aPressed, aX, aY);
-                    MotionEventGenerator.Device device = MotionEventGenerator.getLastDevice(aDevice);
-                    if (device.mWasPressed && device.mCoords.length > 0) {
-                        Log.d(LOGTAG, "======> device: " + device.mCoords[0].x + ", " + device.mCoords[0].y);
-                        if (mKeyboard != null && widget != mKeyboard) {
-                            mKeyboard.getPlacement().parentHandle = aHandle;
-                            mKeyboard.setPosition(device.mCoords[0].x, widget.getPlacement().height - device.mCoords[0].y);
-                            if (mKeyboard.getPlacement().visible)
-                                updateWidget(mKeyboard);
-                        }
+                    MotionEvent.PointerCoords[] coords = MotionEventGenerator.getPointerCoordinates(aDevice);
+                    if (aPressed && coords.length > 0) {
+                        mLastTouchPosition = coords[0];
                     }
                 }
             }
@@ -899,6 +896,18 @@ public class VRBrowserActivity extends PlatformActivity implements WidgetManager
                 uri,
                 permission,
                 aCallback);
+    }
+
+    @Override
+    public void updateKeyboardPosition(int aHandle) {
+        Log.d(LOGTAG, "======> updateKeyboardPosition");
+        Widget widget = mWidgets.get(aHandle);
+        if (widget == mNavigationBar) {
+            mKeyboard.setPosition(aHandle, mLastTouchPosition.x, mLastTouchPosition.y, true);
+
+        } else {
+            mKeyboard.setPosition(aHandle, mLastTouchPosition.x, mLastTouchPosition.y, false);
+        }
     }
 
     @Override

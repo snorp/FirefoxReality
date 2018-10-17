@@ -63,6 +63,7 @@ public class KeyboardWidget extends UIWidget implements CustomKeyboardView.OnKey
     private boolean mIsMultiTap;
     private boolean mIsCapsLock;
     private ImageView mPopupKeyboardLayer;
+    private float mYOffset;
 
     public KeyboardWidget(Context aContext) {
         super(aContext);
@@ -194,20 +195,33 @@ public class KeyboardWidget extends UIWidget implements CustomKeyboardView.OnKey
         aPlacement.width = WidgetPlacement.dpDimension(context, R.dimen.keyboard_width);
         aPlacement.height = WidgetPlacement.dpDimension(context, R.dimen.keyboard_height);
         aPlacement.parentAnchorX = 0.0f;
-        aPlacement.parentAnchorY = 0.0f;
-        aPlacement.anchorX = 0.5f;
-        aPlacement.anchorY = 0.5f;
+        aPlacement.parentAnchorY = 1.0f;
+        aPlacement.anchorX = 0.0f;
+        aPlacement.anchorY = 1.0f;
         aPlacement.translationZ = WidgetPlacement.unitFromMeters(context, R.dimen.keyboard_z_distance_from_browser);
         aPlacement.translationY = WidgetPlacement.unitFromMeters(context, R.dimen.keyboard_y_distance_from_browser);
-        aPlacement.rotationAxisX = 1.0f;
-        aPlacement.rotation = (float)Math.toRadians(WidgetPlacement.floatDimension(context, R.dimen.keyboard_world_rotation));
+//        aPlacement.rotationAxisX = 1.0f;
+//        aPlacement.rotation = (float)Math.toRadians(WidgetPlacement.floatDimension(context, R.dimen.keyboard_world_rotation));
         aPlacement.worldWidth = WidgetPlacement.floatDimension(context, R.dimen.keyboard_world_width);
         aPlacement.visible = false;
+
+        mYOffset = WidgetPlacement.dpDimension(context, R.dimen.keyboard_y_offset);
     }
 
-    public void setPosition(float x, float y) {
-        mWidgetPlacement.translationX = mWidgetPlacement.width/2 + x;
-        mWidgetPlacement.translationY = y;
+    public void setPosition(int aHandle, float x, float y, boolean above) {
+        if (aHandle != mHandle && mWidgetPlacement.visible) {
+            mWidgetPlacement.parentHandle = aHandle;
+            mWidgetPlacement.translationX = x;
+            if (above) {
+                mWidgetPlacement.anchorY = 0.0f;
+                mWidgetPlacement.translationY = y + mYOffset;
+            } else {
+                mWidgetPlacement.anchorY = 1.0f;
+                mWidgetPlacement.translationY = -(y + mYOffset);
+            }
+            mWidgetManager.updateWidget(this);
+            Log.d(LOGTAG, "======> device: " + x + ", " + y);
+        }
     }
 
     public void setBrowserWidget(BrowserWidget aWidget) {
@@ -568,6 +582,10 @@ public class KeyboardWidget extends UIWidget implements CustomKeyboardView.OnKey
     public void showSoftInput(@NonNull GeckoSession session) {
         if (mFocusedView != mBrowserWidget || getVisibility() != View.VISIBLE) {
             updateFocusedView(mBrowserWidget);
+        }
+
+        if (mFocusedView == mBrowserWidget) {
+            mWidgetManager.updateKeyboardPosition(mBrowserWidget.getHandle());
         }
     }
 

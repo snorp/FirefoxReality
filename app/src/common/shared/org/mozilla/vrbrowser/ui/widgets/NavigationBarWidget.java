@@ -593,6 +593,13 @@ public class NavigationBarWidget extends UIWidget implements GeckoSession.Naviga
     }
 
     @Override
+    public void OnUrlBarFocused(boolean focused) {
+        if (focused) {
+            mWidgetManager.updateKeyboardPosition(mHandle);
+        }
+    }
+
+    @Override
     public void OnVoiceSearchResult(String transcription, float confidance) {
         mURLBar.handleURLEdit(transcription);
     }
