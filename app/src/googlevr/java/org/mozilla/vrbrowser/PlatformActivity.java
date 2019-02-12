@@ -17,6 +17,8 @@ import android.view.WindowManager;
 import com.google.vr.ndk.base.AndroidCompat;
 import com.google.vr.ndk.base.GvrLayout;
 
+import java.util.ArrayList;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -121,8 +123,9 @@ public class PlatformActivity extends Activity {
     @Override
     protected void onPause() {
         Log.e(LOGTAG, "PlatformActivity onPause");
+        Log.e(LOGTAG, "mangu pause begin");
         synchronized (activityPausedRunnable) {
-            mView.queueEvent(activityPausedRunnable);
+            queueRunnable(activityPausedRunnable);
             try {
                 activityPausedRunnable.wait();
             } catch(InterruptedException e) {
@@ -131,16 +134,19 @@ public class PlatformActivity extends Activity {
         }
         mLayout.onPause();
         mView.onPause();
+        Log.e(LOGTAG, "mangu pause end");
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         Log.e(LOGTAG, "PlatformActivity onResume");
+        Log.e(LOGTAG, "mangu resume begin");
         super.onResume();
         mLayout.onResume();
         mView.onResume();
-        mView.queueEvent(activityResumedRunnable);
+        Log.e(LOGTAG, "mangu resume end");
+        queueRunnable(activityResumedRunnable);
         setImmersiveSticky();
     }
 
@@ -170,13 +176,16 @@ public class PlatformActivity extends Activity {
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 
+
     void queueRunnable(Runnable aRunnable) {
-        mView.queueEvent(aRunnable);
+        queueRunnableNative(aRunnable);
     }
+
 
     private native void activityCreated(Object aAssetManager, final long aContext);
     private native void activityPaused();
     private native void activityResumed();
     private native void activityDestroyed();
     private native void drawGL();
+    private native void queueRunnableNative(Runnable aRunnable);
 }
