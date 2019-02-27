@@ -131,6 +131,7 @@ public class VRBrowserActivity extends PlatformActivity implements WidgetManager
     private LinkedList<Pair<Object, Float>> mBrightnessQueue;
     private Pair<Object, Float> mCurrentBrightness;
     private SearchEngineWrapper mSearchEngineWrapper;
+    private boolean autoEnterVR = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -325,16 +326,31 @@ public class VRBrowserActivity extends PlatformActivity implements WidgetManager
         }
 
         Uri uri = intent.getData();
-        if (uri == null && intent.getExtras() != null && intent.getExtras().containsKey("url")) {
+        Bundle extras = intent.getExtras();
+        if (uri == null && extras != null && intent.getExtras().containsKey("url")) {
             uri = Uri.parse(intent.getExtras().getString("url"));
         }
 
-        Bundle extras = intent.getExtras();
         if (extras != null && extras.containsKey("homepage")) {
             Uri homepageUri = Uri.parse(extras.getString("homepage"));
             SettingsStore.getInstance(this).setHomepage(homepageUri.toString());
         }
 
+        if (extras != null && extras.containsKey("dom.vr.require-gesture")) {
+            autoEnterVR = !extras.getBoolean("dom.vr.require-gesture", true);
+        }
+
+        if (autoEnterVR) {
+            // Workaround for https://github.com/MozillaReality/FirefoxReality/issues/966
+            Handler handler = new Handler(Looper.getMainLooper());
+            final Uri url = uri;
+            handler.postDelayed(() -> loadIntentUri(url), 4000);
+        } else {
+            loadIntentUri(uri);
+        }
+    }
+
+    void loadIntentUri(Uri uri) {
         if (SessionStore.get().getCurrentSession() == null) {
             String url = (uri != null ? uri.toString() : null);
             int id = SessionStore.get().createSession();
