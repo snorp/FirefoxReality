@@ -1421,7 +1421,7 @@ DeviceDelegateOculusVR::EnterVR(const crow::BrowserEGLContext& aEGLContext) {
   if (!m.ovr) {
     VRB_LOG("Entering VR mode failed");
   } else {
-    vrapi_SetClockLevels(m.ovr, 4, 4);
+    vrapi_SetClockLevels(m.ovr, 2, 2);
     vrapi_SetPerfThread(m.ovr, VRAPI_PERF_THREAD_TYPE_MAIN, gettid());
     vrapi_SetPerfThread(m.ovr, VRAPI_PERF_THREAD_TYPE_RENDERER, gettid());
     m.UpdateTrackingMode();
