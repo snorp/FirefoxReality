@@ -975,7 +975,7 @@ DeviceDelegateOculusVR::SetRenderMode(const device::RenderMode aMode) {
   if (m.renderMode == device::RenderMode::StandAlone) {
     vrapi_SetExtraLatencyMode(m.ovr, ovrExtraLatencyMode::VRAPI_EXTRA_LATENCY_MODE_OFF);
   } else {
-    vrapi_SetExtraLatencyMode(m.ovr, ovrExtraLatencyMode::VRAPI_EXTRA_LATENCY_MODE_ON);
+    vrapi_SetExtraLatencyMode(m.ovr, ovrExtraLatencyMode::VRAPI_EXTRA_LATENCY_MODE_DYNAMIC);
   }
 
   // Reset reorient when exiting or entering immersive
