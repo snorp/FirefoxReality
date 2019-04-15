@@ -30,6 +30,27 @@
     public static int d(...);
 }
 
+
+# --------------------------------------------------------------------
+# REMOVE android speech dependency from GV
+# --------------------------------------------------------------------
+-assumenosideeffects class android.speech.RecognizerIntent {
+    *;
+}
+
+-assumenosideeffects class android.speech.tts.TextToSpeech {
+    *;
+}
+
+-assumenosideeffects class org.mozilla.gecko.SpeechSynthesisService {
+    *;
+}
+
+-assumenosideeffects class org.mozilla.gecko.util.InputOptionsUtils {
+    public static boolean supportsVoiceRecognizer(android.content.Context, java.lang.String);
+    public static android.content.Intent createVoiceRecognizerIntent(java.lang.String);
+}
+
 -dontwarn **
 -target 1.7
 -dontusemixedcaseclassnames
@@ -37,6 +58,9 @@
 -dontpreverify
 -verbose
 -optimizations !code/simplification/arithmetic,!code/allocation/variable
--keep class **
--keepclassmembers class *{*;}
--keepattributes *
+-keep class !org.mozilla.gecko.Speech*, **
+-keepclassmembers class !org.mozilla.gecko.Speech*, *{*;}
+-keepattributes !org.mozilla.gecko.Speech*, *
+
+
+
